@@ -168,7 +168,7 @@ QueryBuilder.prototype.getRules = function(options) {
 
             var rule = {
                 id: model.filter.id,
-                field: model.filter.field,
+                field: model.field || model.filter.field,
                 type: model.filter.type,
                 input: model.filter.input,
                 operator: model.operator.type,
@@ -269,6 +269,7 @@ QueryBuilder.prototype.setRules = function(data) {
                 model.filter = self.getFilterById(item.id);
                 model.operator = self.getOperatorByType(item.operator);
                 model.flags = self.parseRuleFlags(item);
+                model.field = item.field;
 
                 if (model.operator.nb_inputs !== 0 && item.value !== undefined) {
                     model.value = item.value;
