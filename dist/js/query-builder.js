@@ -3280,8 +3280,20 @@ QueryBuilder.define('lager-functions', function(options) {
     this.on('getRuleInput.filter', function(h, rule, name) {
         var t = 10;
     });
+    var setRuleField = function (rule) {
+        if (!rule.filter)
+        {
+            delete rule.field;
+            return;
+        }
+        rule.field = rule.filter.field;
+        if (rule.data.aggregation)
+        {
+            rule.field = rule.data.aggregation + "|" + rule.filter.field;
+        }
+    }
     // init selectpicker
-    this.on('afterCreateRuleFilters', function(e, rule) {        
+    this.on('afterCreateRuleFilters', function(e, rule) {
         var currentRule = rule.$el.find(Selectors.rule_filter);
         var functions = $("<select id='" + rule.id +"_function" + "'></select>");
         options.aggregations.forEach(function(input) {
@@ -3296,9 +3308,7 @@ QueryBuilder.define('lager-functions', function(options) {
         functions.on("change", function (e) {
             rule.data = rule.data || {};
             rule.data.aggregation = e.currentTarget.value;
-            if (!rule.filter)
-                return;
-            rule.field = rule.data.aggregation + "|" + rule.filter.field;
+            setRuleField(rule);
         });
         currentRule.removeClass('form-control').selectpicker(options);
     });
@@ -3314,7 +3324,7 @@ QueryBuilder.define('lager-functions', function(options) {
         var agregation = rule.$el.find("#" + rule.id +"_function");
         rule.data = rule.data || {};
         rule.data.aggregation = agregation[0].value;
-        rule.field = rule.data.aggregation + "|" + rule.filter.field;
+        setRuleField(rule);
     });
 
     this.on('afterUpdateRuleOperator', function(e, rule) {
