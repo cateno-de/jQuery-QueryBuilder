@@ -1,72 +1,109 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>jQuery-QueryBuilder</title>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>jQuery QueryBuilder Example</title>
-
-  <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" id="bt-theme">
+  <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css">
+  <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="../bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
   <link rel="stylesheet" href="../bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css">
-  <link rel="stylesheet" href="../bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css">
-  <link rel="stylesheet" href="../bower_components/selectize/dist/css/selectize.bootstrap3.css">
 
-  <link rel="stylesheet" href="../dist/css/query-builder.default.css" id="qb-theme">
-
-  <link rel="stylesheet" href="http://mistic100.github.io/jQuery-QueryBuilder/assets/flags/flags.css">
   <style>
-    .flag { display: inline-block; }
+  #qunit-modulefilter-container { float:none; }
+  #blanket-main { font-size:14px !important; }
   </style>
+
+  <link rel="stylesheet" href="../dist/css/query-builder.default.css">
+
+  <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="../bower_components/qunit/qunit/qunit.js"></script>
+  <script src="../bower_components/blanket/dist/qunit/blanket.min.js"></script>
+  <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+  <script src="../bower_components/bootbox/bootbox.js"></script>
+  <script src="../bower_components/moment/min/moment.min.js"></script>
+  <script src="../bower_components/sql-parser/browser/sql-parser.js"></script>
+  <script src="../bower_components/jquery-extendext/jQuery.extendext.min.js"></script>
+  <script src="../bower_components/doT/doT.js"></script>
+
+
+<!-- qunit:imports -->
+<script src="../src/main.js" data-cover></script>
+<script src="../src/defaults.js" data-cover></script>
+<script src="../src/core.js" data-cover></script>
+<script src="../src/public.js" data-cover></script>
+<script src="../src/data.js" data-cover></script>
+<script src="../src/template.js" data-cover></script>
+<script src="../src/model.js" data-cover></script>
+<script src="../src/utils.js" data-cover></script>
+<script src="../src/jquery.js" data-cover></script>
+    
+<script src="../dist/i18n/query-builder.en.js" data-cover></script>
+<script src="../src/plugins/bt-checkbox/plugin.js" data-cover></script>
+<script src="../src/plugins/bt-selectpicker/plugin.js" data-cover></script>
+<script src="../src/plugins/bt-tooltip-errors/plugin.js" data-cover></script>
+<script src="../src/plugins/change-filters/plugin.js" data-cover></script>
+<script src="../src/plugins/filter-description/plugin.js" data-cover></script>
+<script src="../src/plugins/invert/plugin.js" data-cover></script>
+<script src="../src/plugins/mongodb-support/plugin.js" data-cover></script>
+<script src="../src/plugins/sortable/plugin.js" data-cover></script>
+<script src="../src/plugins/sql-support/plugin.js" data-cover></script>
+<script src="../src/plugins/unique-filter/plugin.js" data-cover></script>
+<!-- /qunit:imports -->
+
 </head>
-
-<body>
-
+<script src="../src/plugins/lager-functions/plugin.js"></script>
+<body class="container" style="padding:15px;">
+  
+    
 <div class="container">
   <div class="col-md-12 col-lg-10 col-lg-offset-1">
     <div id="builder"></div>
-
     <div class="btn-group">
       <button class="btn btn-danger reset">Reset</button>
       <button class="btn btn-warning set-filters" data-toggle="tooltip" title="Adds a filter 'New filter' and removes 'Coordinates', 'State', 'BSON'" data-container="body" data-placement="bottom">Set filters</button>
     </div>
-
     <div class="btn-group">
       <button class="btn btn-default" disabled>Set:</button>
       <button class="btn btn-success set">From JSON</button>
       <button class="btn btn-success set-mongo">From MongoDB</button>
-      <button class="btn btn-success set-sql">From SQL</button>
-    </div>
+	
+  <button class="btn btn-success set-sql">From SQL</button>
 
-    <div class="btn-group">
-      <button class="btn btn-default" disabled>Get:</button>
-      <button class="btn btn-primary parse-json">JSON</button>
-      <button class="btn btn-primary parse-sql" data-stmt="false">SQL</button>
-      <button class="btn btn-primary parse-sql" data-stmt="question_mark">SQL statement</button>
-      <button class="btn btn-primary parse-mongo">MongoDB</button>
-    </div>
-
-    <div id="result" class="hide">
-      <h3>Output</h3>
-      <pre></pre>
-    </div>
-  </div>
 </div>
 
-<script src="../bower_components/jquery/dist/jquery.js"></script>
-<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
-<script src="../bower_components/bootbox/bootbox.js"></script>
-<script src="../bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
-<script src="../bower_components/selectize/dist/js/standalone/selectize.min.js"></script>
-<script src="../bower_components/jquery-extendext/jQuery.extendext.min.js"></script>
-<script src="../bower_components/sql-parser/browser/sql-parser.js"></script>
-<script src="../bower_components/doT/doT.js"></script>
 
-<script src="../dist/js/query-builder.js"></script>
-<script src="../src/plugins/lager-functions/plugin.js"></script>
+<div class="btn-group">
 
+  <button class="btn btn-default" disabled>Get:</button>
+
+  <button class="btn btn-primary parse-json">JSON</button>
+
+  <button class="btn btn-primary parse-sql" data-stmt="false">SQL</button>
+
+  <button class="btn btn-primary parse-sql" data-stmt="question_mark">SQL statement</button>
+
+  <button class="btn btn-primary parse-mongo">MongoDB</button>
+
+</div>
+
+
+<div id="result" class="hide">
+
+  <h3>Output</h3>
+
+  <pre></pre>
+
+    </div>
+	
+  </div>
+	
+</div>
 <script>
+
+    
+    
 $('[data-toggle="tooltip"]').tooltip();
 
 var $b = $('#builder');
@@ -77,11 +114,16 @@ var options = {
                 'bt-tooltip-errors': { delay: 100 },
                 'sortable': null,
                 'filter-description': { mode: 'bootbox' },
-                'lager-functions': {aggregations:[
-                    {id:'',label:"------"},
-                    {id:'FilterValues.Min',label:"MIN"},
-                    {id:'FilterValues.Max',label:"MAX"},
-                    {id:'FilterValues.Sum',label:"SUM"}, ]},
+                'lager-functions': {
+                    aggregations:[
+                        {id:'',label:"------"},
+                        {id:'FilterValues.Min',label:"MIN"},
+                        {id:'FilterValues.Max',label:"MAX"},
+                        {id:'FilterValues.Sum',label:"SUM"}, 
+                    ],
+                liveSearch: true,
+                size: 10,
+                width:120},
                 'unique-filter': null,
                 'bt-checkbox': { color: 'primary' },
                 'invert': null
@@ -89,7 +131,31 @@ var options = {
 
             filters:[
                 {id:"Vorgang.ID", label:"Vorgang.ID", type:"integer"},
-                {id:"Vorgang.Name", label:"Vorgang.Name"}
+                {id:"Vorgang.Name", label:"Vorgang.Name", type: "string"}
+            ],
+            operators:[                
+                'equal',
+                'not_equal',
+                'in',
+                'not_in',
+                'less',
+                'less_or_equal',
+                'greater',
+                'greater_or_equal',
+                {type: 'between',          nb_inputs: 2, multiple: false, apply_to: ['number', 'datetime', 'string']},
+                'not_between',
+                'begins_with',
+                'not_begins_with',
+                'contains',
+                'not_contains',
+                'ends_with',
+                'not_ends_with',
+                'is_empty',
+                'is_not_empty',
+                'is_null',
+                'is_not_null',
+                'in_list',
+                'not_in_list'
             ]
         };
 
@@ -107,49 +173,30 @@ $('#builder').on('afterCreateRuleInput.queryBuilder', function(e, rule) {
     // set rules
 $('.set').on('click', function() {
   $('#builder').queryBuilder('setRules',
-                            {
+                            
+                             {
   "condition": "AND",
   "rules": [
     {
       "id": "Vorgang.Name",
-      "field": "sum|Vorgang.Name",
+      "field": "Vorgang.Name",
       "type": "string",
-      "input": "text",
-      "operator": "equal",
-      "value": "4",
+      "input": "list",
+      "operator": "not_in_list",
+      "value": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
       "data": {
-        "aggregation": "sum"
+        "aggregation": ""
       }
-    },
-    {
-      "id": "Vorgang.ID",
-      "field": "min|Vorgang.ID",
-      "type": "integer",
-      "input": "text",
-      "operator": "equal",
-      "value": "2",
-      "data": {
-        "aggregation": "min"
-      }
-    },
-    {
-      "condition": "AND",
-      "rules": [
-        {
-          "id": "Vorgang.Name",
-          "field": "max|Vorgang.Name",
-          "type": "string",
-          "input": "text",
-          "operator": "equal",
-          "value": "1",
-          "data": {
-            "aggregation": "max"
-          }
-        }
-      ]
     }
   ]
-});
+}
+                            );
 });
 // set rules from MongoDB
 $('.set-mongo').on('click', function() {

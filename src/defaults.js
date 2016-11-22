@@ -19,7 +19,8 @@ QueryBuilder.inputs = [
     'textarea',
     'radio',
     'checkbox',
-    'select'
+    'select',
+    'list'
 ];
 
 /**
@@ -96,7 +97,9 @@ QueryBuilder.OPERATORS = {
     is_empty:         { type: 'is_empty',         nb_inputs: 0, multiple: false, apply_to: ['string'] },
     is_not_empty:     { type: 'is_not_empty',     nb_inputs: 0, multiple: false, apply_to: ['string'] },
     is_null:          { type: 'is_null',          nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] },
-    is_not_null:      { type: 'is_not_null',      nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] }
+    is_not_null:      { type: 'is_not_null',      nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] },
+    in_list:          { type: 'in_list',          nb_inputs: 1, multiple: false, is_list: true, apply_to: ['string', 'number', 'datetime'] },
+    not_in_list:      { type: 'not_in_list',      nb_inputs: 1, multiple: false, is_list: true, apply_to: ['string', 'number', 'datetime'] }
 };
 
 /**
@@ -160,7 +163,9 @@ QueryBuilder.DEFAULTS = {
         'is_empty',
         'is_not_empty',
         'is_null',
-        'is_not_null'
+        'is_not_null',
+        'in_list',
+        'not_in_list'
     ],
 
     icons: {

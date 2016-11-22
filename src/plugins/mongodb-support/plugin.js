@@ -26,7 +26,11 @@ QueryBuilder.defaults({
         is_empty:         function(v) { return ''; },
         is_not_empty:     function(v) { return { '$ne': '' }; },
         is_null:          function(v) { return null; },
-        is_not_null:      function(v) { return { '$ne': null }; }
+        is_not_null:      function(v) { return { '$ne': null }; },
+        in_list:          function(v) { return { '$in': v }; },
+        "in list":          function(v) { return { '$in': v }; },
+        not_in_list:          function(v) { return { '$in': v }; },
+        "not in list":          function(v) { return { '$nin': v }; }
     },
 
     mongoRuleOperators: {

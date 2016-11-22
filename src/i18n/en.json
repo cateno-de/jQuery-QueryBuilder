@@ -32,7 +32,9 @@
     "is_empty": "is empty",
     "is_not_empty": "is not empty",
     "is_null": "is null",
-    "is_not_null": "is not null"
+    "is_not_null": "is not null",
+    "in_list":"in list",
+    "not_in_list":"not in list",
   },
 
   "errors": {

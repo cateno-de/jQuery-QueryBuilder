@@ -339,11 +339,18 @@ QueryBuilder.prototype.getRuleValue = function(rule) {
                     break;
 
                 default:
-                    value.push($value.find('[name=' + name + ']').val());
+                    if (operator.is_list) {
+                        var values = $value.find('[name=' + name + ']').val().split('\n');
+                        for(var i=0;i<values.length;i++)
+                            value.push(values[i]);
+                        
+                    } else {
+                        value.push($value.find('[name=' + name + ']').val());
+                    }
             }
         }
 
-        if (operator.nb_inputs === 1) {
+        if (operator.nb_inputs === 1 && !operator.is_list) {
             value = value[0];
         }
 
@@ -396,8 +403,13 @@ QueryBuilder.prototype.setRuleValue = function(rule, value) {
                     break;
 
                 default:
-                    $value.find('[name=' + name + ']').val(value[i]).trigger('change');
-                    break;
+                    if (operator.is_list) {
+                        $value.find('[name=' + name + ']').text(value[i].join('\n')).trigger('change');
+                        break;
+                    } else {
+                        $value.find('[name=' + name + ']').val(value[i]).trigger('change');
+                        break;
+                    }
             }
         }
     }

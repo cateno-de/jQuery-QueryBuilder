@@ -166,7 +166,7 @@ QueryBuilder.prototype.getRuleOperatorSelect = function(rule, operators) {
  * @param value_id {int}
  * @return {string}
  */
-QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
+QueryBuilder.prototype.getRuleInput = function(rule, value_id, operator) {
     var filter = rule.filter;
     var validation = rule.filter.validation || {};
     var name = rule.id + '_value_' + value_id;
@@ -177,7 +177,9 @@ QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
         h = filter.input.call(this, rule, name);
     }
     else {
-        switch (filter.input) {
+        var input = filter.input;
+        if (operator.is_list) input="list";
+        switch (input) {
             case 'radio': case 'checkbox':
                 Utils.iterateOptions(filter.values, function(key, val) {
                     h+= '<label' + c + '><input type="' + filter.input + '" name="' + name + '" value="' + key + '"> ' + val + '</label> ';
@@ -194,8 +196,17 @@ QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
                 });
                 h+= '</select>';
                 break;
-
+            case 'list':                
+                h+= '<textarea class="form-control" name="' + name + '"';
+                if (filter.size) h+= ' cols="' + filter.size + '"';
+                h+= ' rows="' + (filter.rows||5) + '"';
+                if (validation.min !== undefined) h+= ' minlength="' + validation.min + '"';
+                if (validation.max !== undefined) h+= ' maxlength="' + validation.max + '"';
+                if (filter.placeholder) h+= ' placeholder="' + filter.placeholder + '"';
+                h+= '></textarea>';
+                break;
             case 'textarea':
+                
                 h+= '<textarea class="form-control" name="' + name + '"';
                 if (filter.size) h+= ' cols="' + filter.size + '"';
                 if (filter.rows) h+= ' rows="' + filter.rows + '"';

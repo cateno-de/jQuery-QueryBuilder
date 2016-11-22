@@ -432,7 +432,8 @@ QueryBuilder.inputs = [
     'textarea',
     'radio',
     'checkbox',
-    'select'
+    'select',
+    'list'
 ];
 
 /**
@@ -509,7 +510,9 @@ QueryBuilder.OPERATORS = {
     is_empty:         { type: 'is_empty',         nb_inputs: 0, multiple: false, apply_to: ['string'] },
     is_not_empty:     { type: 'is_not_empty',     nb_inputs: 0, multiple: false, apply_to: ['string'] },
     is_null:          { type: 'is_null',          nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] },
-    is_not_null:      { type: 'is_not_null',      nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] }
+    is_not_null:      { type: 'is_not_null',      nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] },
+    in_list:          { type: 'in_list',          nb_inputs: 1, multiple: false, is_list: true, apply_to: ['string', 'number', 'datetime'] },
+    not_in_list:      { type: 'not_in_list',      nb_inputs: 1, multiple: false, is_list: true, apply_to: ['string', 'number', 'datetime'] }
 };
 
 /**
@@ -573,7 +576,9 @@ QueryBuilder.DEFAULTS = {
         'is_empty',
         'is_not_empty',
         'is_null',
-        'is_not_null'
+        'is_not_null',
+        'in_list',
+        'not_in_list'
     ],
 
     icons: {
@@ -1177,7 +1182,7 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     var filter = rule.filter;
 
     for (var i = 0; i < rule.operator.nb_inputs; i++) {
-        var $ruleInput = $(this.getRuleInput(rule, i));
+        var $ruleInput = $(this.getRuleInput(rule, i, rule.operator));
         if (i > 0) $valueContainer.append(this.settings.inputs_separator);
         $valueContainer.append($ruleInput);
         $inputs = $inputs.add($ruleInput);
@@ -1236,7 +1241,7 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
     else {
         $valueContainer.show();
 
-        if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs) {
+        if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs || rule.operator.is_list!=previousOperator.is_list) {
             this.createRuleInput(rule);
         }
     }
@@ -1985,11 +1990,18 @@ QueryBuilder.prototype.getRuleValue = function(rule) {
                     break;
 
                 default:
-                    value.push($value.find('[name=' + name + ']').val());
+                    if (operator.is_list) {
+                        var values = $value.find('[name=' + name + ']').val().split('\n');
+                        for(var i=0;i<values.length;i++)
+                            value.push(values[i]);
+                        
+                    } else {
+                        value.push($value.find('[name=' + name + ']').val());
+                    }
             }
         }
 
-        if (operator.nb_inputs === 1) {
+        if (operator.nb_inputs === 1 && !operator.is_list) {
             value = value[0];
         }
 
@@ -2042,8 +2054,13 @@ QueryBuilder.prototype.setRuleValue = function(rule, value) {
                     break;
 
                 default:
-                    $value.find('[name=' + name + ']').val(value[i]).trigger('change');
-                    break;
+                    if (operator.is_list) {
+                        $value.find('[name=' + name + ']').text(value[i].join('\n')).trigger('change');
+                        break;
+                    } else {
+                        $value.find('[name=' + name + ']').val(value[i]).trigger('change');
+                        break;
+                    }
             }
         }
     }
@@ -2315,7 +2332,7 @@ QueryBuilder.prototype.getRuleOperatorSelect = function(rule, operators) {
  * @param value_id {int}
  * @return {string}
  */
-QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
+QueryBuilder.prototype.getRuleInput = function(rule, value_id, operator) {
     var filter = rule.filter;
     var validation = rule.filter.validation || {};
     var name = rule.id + '_value_' + value_id;
@@ -2326,7 +2343,9 @@ QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
         h = filter.input.call(this, rule, name);
     }
     else {
-        switch (filter.input) {
+        var input = filter.input;
+        if (operator.is_list) input="list";
+        switch (input) {
             case 'radio': case 'checkbox':
                 Utils.iterateOptions(filter.values, function(key, val) {
                     h+= '<label' + c + '><input type="' + filter.input + '" name="' + name + '" value="' + key + '"> ' + val + '</label> ';
@@ -2343,8 +2362,17 @@ QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
                 });
                 h+= '</select>';
                 break;
-
+            case 'list':                
+                h+= '<textarea class="form-control" name="' + name + '"';
+                if (filter.size) h+= ' cols="' + filter.size + '"';
+                h+= ' rows="' + (filter.rows||5) + '"';
+                if (validation.min !== undefined) h+= ' minlength="' + validation.min + '"';
+                if (validation.max !== undefined) h+= ' maxlength="' + validation.max + '"';
+                if (filter.placeholder) h+= ' placeholder="' + filter.placeholder + '"';
+                h+= '></textarea>';
+                break;
             case 'textarea':
+                
                 h+= '<textarea class="form-control" name="' + name + '"';
                 if (filter.size) h+= ' cols="' + filter.size + '"';
                 if (filter.rows) h+= ' rows="' + filter.rows + '"';
@@ -3633,7 +3661,11 @@ QueryBuilder.defaults({
         is_empty:         function(v) { return ''; },
         is_not_empty:     function(v) { return { '$ne': '' }; },
         is_null:          function(v) { return null; },
-        is_not_null:      function(v) { return { '$ne': null }; }
+        is_not_null:      function(v) { return { '$ne': null }; },
+        in_list:          function(v) { return { '$in': v }; },
+        "in list":          function(v) { return { '$in': v }; },
+        not_in_list:          function(v) { return { '$in': v }; },
+        "not in list":          function(v) { return { '$nin': v }; }
     },
 
     mongoRuleOperators: {

@@ -589,7 +589,7 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     var filter = rule.filter;
 
     for (var i = 0; i < rule.operator.nb_inputs; i++) {
-        var $ruleInput = $(this.getRuleInput(rule, i));
+        var $ruleInput = $(this.getRuleInput(rule, i, rule.operator));
         if (i > 0) $valueContainer.append(this.settings.inputs_separator);
         $valueContainer.append($ruleInput);
         $inputs = $inputs.add($ruleInput);
@@ -648,7 +648,7 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
     else {
         $valueContainer.show();
 
-        if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs) {
+        if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs || rule.operator.is_list!=previousOperator.is_list) {
             this.createRuleInput(rule);
         }
     }
